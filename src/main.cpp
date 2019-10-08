@@ -2,7 +2,9 @@
 using namespace std;
 int main(){
   Graph graph("teste.txt");
-  graph.generateGraphFile("saida.txt");
-  graph.generateAdjacencyMatrix();
-  graph.generateAdjacencyList();
+  //graph.generateGraphFile("saida.txt");
+  //graph.generateAdjacencyMatrix();
+  //graph.generateAdjacencyList();
+  graph.generateComponents();
+  graph.printComponents();
 }

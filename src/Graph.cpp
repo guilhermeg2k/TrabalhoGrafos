@@ -12,17 +12,18 @@ Graph::Graph(std::string textFile)
 		for (int i = 1; i <= numberOfVertices; i++)
 		{
 			Vertex *v = new Vertex();
+			v->number = i;
 			this->vertices[i] = v;
 		}
 		while (getline(file, line))
 		{
 			auto numbers = getNumbersFromLine(line);
-			Edge edge(this->vertices[numbers.first], this->vertices[numbers.second]);
+			Edge* edge = new Edge(this->vertices[numbers.first], this->vertices[numbers.second]);
 			this->edges.push_back(edge);
 		}
 		file.close();
 		for (int i = 1; i <= numberOfVertices; i++)
-			this->vertices[i]->setAdjacentsAndDegree(&this->edges);
+			this->vertices[i]->setAdjacentsAndDegree(this->edges);
 	}
 }
 Edge::Edge(Vertex *a, Vertex *b)
@@ -40,24 +41,24 @@ void Graph::generateGraphFile(std::string fileName)
 		file << "Vértice: " << i << " Grau: " << this->vertices[i]->degree << "\n";
 }
 
-void Vertex::setAdjacentsAndDegree(std::vector<Edge> *edges)
+void Vertex::setAdjacentsAndDegree(std::vector<Edge*> edges)
 {
 	this->degree = 0;
-	for (auto edge : *edges)
+	for (auto edge : edges)
 	{
-		if (edge.vertex_a == this)
+		if (edge->vertex_a == this)
 		{
-			this->adjacents.push_back(edge.vertex_b);
+			this->adjacents.push_back(edge->vertex_b);
 			this->degree++;
 		}
-		else if (edge.vertex_b == this)
+		else if (edge->vertex_b == this)
 		{
-			this->adjacents.push_back(edge.vertex_a);
+			this->adjacents.push_back(edge->vertex_a);
 			this->degree++;
 		}
-		else if (edge.vertex_b == this && edge.vertex_a == this)
+		else if (edge->vertex_b == this && edge->vertex_a == this)
 		{
-			this->adjacents.push_back(edge.vertex_a);
+			this->adjacents.push_back(edge->vertex_a);
 			this->degree += 2;
 		}
 	}
@@ -100,6 +101,35 @@ void Graph::generateAdjacencyList()
 			std::cout << "}, ";
 	}
 	std::cout << "\n";
+}
+void Graph::generateComponents(){
+	for (auto edge : this->edges){
+		if (!edge->vertex_a->visited){
+			Graph* component = new Graph();
+			visitVerticesRecursive(edge->vertex_a, component);
+			this->components.push_back(component);
+		}	
+	}
+}
+void visitVerticesRecursive(Vertex* vertex, Graph* component){
+	vertex->visited = true;
+	component->vertices[component->vertices.size()+1] = vertex;
+	for (auto v: vertex->adjacents){
+		if(!v->visited)
+			visitVerticesRecursive(v, component);
+	}
+}
+void Graph::printComponents(){
+	int counter = 1;
+	std::cout << "Número de componentes: " << this->components.size() << "\n";
+	for (auto component : this->components){
+		std::cout << "Componente " << counter << " Número de vertices: " <<  component->vertices.size() <<"\n{";
+		for (auto vertex: component->vertices){
+			printf(" %d ", vertex.second->number);
+		}
+		std::cout << "}\n";
+		counter++;
+	}
 }
 std::pair<int, int> getNumbersFromLine(std::string line)
 {

@@ -10,6 +10,15 @@
 class Edge;
 class Vertex;
 class Graph;
+class Vertex
+{
+public:
+	unsigned int number;
+	unsigned int degree;
+	std::vector<Vertex *> adjacents;
+	void setAdjacentsAndDegree(std::vector<Edge*> edges);
+	bool visited = false;
+};
 class Edge
 {
 public:
@@ -18,20 +27,14 @@ public:
 	Vertex *vertex_a;
 	Vertex *vertex_b;
 };
-class Vertex
-{
-public:
-	unsigned int degree;
-	std::vector<Vertex *> adjacents;
-	void setAdjacentsAndDegree(std::vector<Edge> *edges);
-};
 class Graph
 {
 public:
-	Graph();
+	Graph(){};
 	Graph(std::string textFile);
-	std::vector<Edge> edges;
+	std::vector<Edge*> edges;
 	std::map<int, Vertex *> vertices;
+	std::vector<Graph*> components;
 	void generateGraphFile(std::string fileName);
 	unsigned int getNumberOfVertices(){
 		return this->vertices.size();
@@ -41,6 +44,9 @@ public:
 	};
 	void generateAdjacencyMatrix();
 	void generateAdjacencyList();
+	void generateComponents();
+	void printComponents();
 };
 std::pair<int, int> getNumbersFromLine(std::string line);
+void visitVerticesRecursive(Vertex* vertex, Graph* component);
 #endif

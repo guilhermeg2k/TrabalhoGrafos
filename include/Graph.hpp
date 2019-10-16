@@ -35,17 +35,27 @@ public:
 	std::vector<Edge*> edges;
 	std::map<int, Vertex *> vertices;
 	std::vector<Graph*> components;
-	void generateGraphFile(std::string fileName);
+	std::vector<std::vector<int>> adjacencyMatrix;
+	std::vector<std::vector<int>> adjacencyList;
+	void printGraphInfo();
+	void saveGraphInfoFile(std::string fileName);
+	void generateAdjacencyMatrix();
+	void printAdjacencyMatrix();
+	void saveAdjacencyMatrixToFile(std::string fileName);
+	void generateAdjacencyList();
+	void printAdjacencyList();
+	void saveAdjacencyListToFile(std::string fileName);
+	void generateComponents();
+	void printComponents();
+	void saveComponentsToFile(std::string fileName);
+	void printAll();
+	void saveAllToFile(std::string fileName);
 	unsigned int getNumberOfVertices(){
 		return this->vertices.size();
 	};
 	unsigned int getNumberOfEdges(){
 		return this->edges.size();
 	};
-	void generateAdjacencyMatrix();
-	void generateAdjacencyList();
-	void generateComponents();
-	void printComponents();
 };
 std::pair<int, int> getNumbersFromLine(std::string line);
 void visitVerticesRecursive(Vertex* vertex, Graph* component);

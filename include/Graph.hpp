@@ -26,7 +26,6 @@ public:
 	unsigned int number;
 	unsigned int degree;
 	vector<Vertex *> adjacents;
-	void setAdjacentsAndDegree(vector<Edge*> edges);
 	bool visitedbyComponentGenerator = false;
 	bool visitedbyBFF = false;
 };
@@ -48,11 +47,10 @@ public:
 	vector<Edge*> edges;
 	vector<Vertex *> vertices;
 	vector<Graph*> components;
-	//vector<vector<int>> adjacencyMatrix;
-	//vector<vector<int>> adjacencyList;
-	vector<BFSTable*> BFS;
+	vector<BFSTable> BFS;
 	std::vector<No*> arvoreDeBusca;
 	int nivelMax = 0;
+	int diameter = 0;
 	void printGraphInfo();
 	void saveGraphInfoFile(string fileName);
 	void generateAdjacencyMatrix();
@@ -69,6 +67,7 @@ public:
 	void dfsr(Vertex* vPai,int* pre,No* noPai);
 	void printArvore();
 	void geraArquivoArvore(string fileName);
+	void calculateDiameter();
 	unsigned int getNumberOfVertices(){
 		return this->vertices.size();
 	};

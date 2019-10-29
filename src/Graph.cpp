@@ -4,25 +4,6 @@ Edge::Edge(Vertex *a, Vertex *b)
 	this->vertex_a = a;
 	this->vertex_b = b;
 }
-void Vertex::setAdjacentsAndDegree(vector<Edge *> edges)
-{
-	for (auto edge : edges)
-	{
-		if (edge->vertex_a == this)
-		{
-			this->adjacents[edge->vertex_b->number] = edge->vertex_b;
-			edge->vertex_b->adjacents[this->number] = this;
-			this->degree++;
-		}
-		else if (edge->vertex_b == this)
-		{
-			this->adjacents[edge->vertex_a->number] = edge->vertex_a;
-			edge->vertex_a->adjacents[this->number] = this;
-			this->degree++;
-		}
-	}
-	this->degree = this->adjacents.size();
-}
 Graph::Graph(string textFile)
 {
 	ifstream file(textFile);
@@ -41,10 +22,15 @@ Graph::Graph(string textFile)
 		while (getline(file, line))
 		{
 			auto numbers = getNumbersFromLine(line);
-			Edge *edge = new Edge(this->vertices[numbers.first-1], this->vertices[numbers.second-1]);
-			this->vertices[numbers.first-1]->adjacents.push_back(this->vertices[numbers.second-1]);
-			this->vertices[numbers.second-1]->adjacents.push_back(this->vertices[numbers.first-1]);
+			Edge *edge = new Edge(this->vertices[numbers.first - 1], this->vertices[numbers.second - 1]);
+			this->vertices[numbers.first - 1]->adjacents.push_back(this->vertices[numbers.second - 1]);
+			this->vertices[numbers.second - 1]->adjacents.push_back(this->vertices[numbers.first - 1]);
 			this->edges.push_back(edge);
+		}
+		for (auto v : this->vertices)
+		{
+			BFSTable bfstable;
+			this->BFS.push_back(bfstable);
 		}
 	}
 }
@@ -71,9 +57,10 @@ void Graph::generateAdjacencyMatrix()
 		int arr[this->getNumberOfVertices()] = {};
 		for (auto pa : v->adjacents)
 		{
-			arr[pa->number] = 1;	
+			arr[pa->number] = 1;
 		}
-		for (auto i: arr){
+		for (auto i : arr)
+		{
 			cout << i;
 		}
 		cout << "\n";
@@ -88,9 +75,10 @@ void Graph::saveAdjacencyMatrixToFile(string fileName)
 		int arr[this->getNumberOfVertices()] = {};
 		for (auto pa : v->adjacents)
 		{
-			arr[pa->number] = 1;	
+			arr[pa->number] = 1;
 		}
-		for (auto i: arr){
+		for (auto i : arr)
+		{
 			file << i;
 		}
 		file << "\n";
@@ -162,10 +150,12 @@ void Graph::saveComponentsToFile(string fileName)
 
 	for (auto component : this->components)
 	{
-		if(tamanhoMaiorComponente < component->vertices.size()){
+		if (tamanhoMaiorComponente < component->vertices.size())
+		{
 			tamanhoMaiorComponente = component->vertices.size();
 		}
-		if (tamanhoMenorComponente > component->vertices.size()){
+		if (tamanhoMenorComponente > component->vertices.size())
+		{
 			tamanhoMenorComponente = component->vertices.size();
 		}
 		file << "Componente " << counter << ", Número de vertices: " << component->vertices.size() << "\n{";
@@ -181,42 +171,47 @@ void Graph::saveComponentsToFile(string fileName)
 }
 void Graph::breadthFirstSearch(int vertex)
 {
-	int distance = 1;
 	queue<Vertex *> queue;
-	for (auto v : this->vertices)
-	{
-		BFSTable *bfstable = new BFSTable;
-		this->BFS.push_back(bfstable);
-	}
 	queue.push(this->vertices[vertex]);
 	queue.front()->visitedbyBFF = true;
-	bool rodo = false;
+	for (auto v : this->vertices)
+	{
+		v->visitedbyBFF = false;
+		this->BFS[v->number].distance = 0;
+		this->BFS[v->number].root = 0;
+	}
 	while (!queue.empty())
 	{
 		for (auto s : queue.front()->adjacents)
 		{
 			if (s->visitedbyBFF == false)
 			{
-				this->BFS[s->number]->distance = distance;
-				this->BFS[s->number]->root = queue.front()->number;
+				this->BFS[s->number].distance = this->BFS[queue.front()->number].distance + 1;
+				this->BFS[s->number].root = queue.front()->number;
+				if ( this->BFS[s->number].distance > this->diameter){
+					this->diameter = this->BFS[s->number].distance ;
+				}
 				s->visitedbyBFF = true;
 				queue.push(s);
-				rodo = true;
 			}
 		}
-		if (rodo == true)
-			distance++;
-		rodo = false;
 		queue.pop();
 	}
 }
-
+void Graph::calculateDiameter()
+{
+	for (auto v : this->vertices)
+	{
+		breadthFirstSearch(v->number);
+	}
+	cout << "O DIÂMETRO DO GRAFO É: " << this->diameter << "\n";
+}
 void Graph::saveBFSToFile(string fileName)
 {
 	ofstream file(fileName);
 	for (int i = 0; i < this->getNumberOfVertices(); i++)
 	{
-		file <<"Vértice " << i << " Raiz " << this->BFS[i]->root<< " Nível "<< this->BFS[i]->distance << "\n";
+		file << "Vértice " << i << " Raiz " << this->BFS[i].root << " Nível " << this->BFS[i].distance << "\n";
 	}
 }
 
@@ -231,12 +226,12 @@ void Graph::printBFS()
 	cout << "ROOT     ";
 	for (int i = 0; i < this->getNumberOfVertices(); i++)
 	{
-		cout << this->BFS[i]->root << " ";
+		cout << this->BFS[i].root << " ";
 	}
 	cout << "\nDISTANCE ";
-	for (int i = 1; i < this->getNumberOfVertices(); i++)
+	for (int i = 0; i < this->getNumberOfVertices(); i++)
 	{
-		cout << this->BFS[i]->distance << " ";
+		cout << this->BFS[i].distance << " ";
 	}
 	cout << "\n";
 }
@@ -257,7 +252,7 @@ void Graph::graphDFS(int verticeInicial)
 
 	Vertex *v = this->vertices[verticeInicial];
 
-	for (int i = 1; i <= this->getNumberOfVertices(); ++i)
+	for (int i = 0; i < this->getNumberOfVertices(); ++i)
 	{
 		verticesVisitados[i] = 0;
 	}
@@ -278,7 +273,7 @@ void Graph::graphDFS(int verticeInicial)
 
 void Graph::dfsr(Vertex *vPai, int *verticesVisitados, No *noPai)
 {
-	verticesVisitados[vPai->number] = 1;
+	verticesVisitados[vPai->number] = 0;
 
 	for (auto v : vPai->adjacents)
 	{

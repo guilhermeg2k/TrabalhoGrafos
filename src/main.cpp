@@ -43,7 +43,8 @@ int main()
 		//
 		cout << "[5]REALIZAR BUSCA EM LARGURA\n";
 		cout << "[6]REALIZAR BUSCA EM PROFUNDIDADE\n";
-		cout << "[7]SAIR DO PROGRAMA\n";
+		cout << "[7]CALCULAR DIÂMETRO DO GRAFO\n";
+		cout << "[8]SAIR DO PROGRAMA\n";
 		cin >> op;
 		
 		switch (op)
@@ -159,6 +160,10 @@ int main()
 		
 		case 7:
 		{
+			graph.calculateDiameter();
+			break;
+		}
+		case 8: {
 			proc = 's';
 			break;
 		}

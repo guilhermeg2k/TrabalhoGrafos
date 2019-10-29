@@ -54,7 +54,7 @@ Graph::Graph(string textFile)
 }
 void Graph::saveGraphInfoFile(string fileName)
 {
-	ofstream file(fileName, fstream::app);
+	ofstream file(fileName);
 	file << "Número de vértices: " << this->getNumberOfVertices() << "\n";
 	file << "Número de arestas: " << this->getNumberOfEdges() << "\n";
 	for (size_t i = 1; i <= this->getNumberOfVertices(); i++)
@@ -85,7 +85,7 @@ void Graph::generateAdjacencyMatrix()
 }
 void Graph::saveAdjacencyMatrixToFile(string fileName)
 {
-	ofstream file(fileName, fstream::app);
+	ofstream file(fileName);
 	file << "Matrix de Adjacência\n";
 	for (auto v : this->vertices)
 	{
@@ -116,7 +116,7 @@ void Graph::generateAdjacencyList()
 }
 void Graph::saveAdjacencyListToFile(string fileName)
 {
-	ofstream file(fileName, fstream::app);
+	ofstream file(fileName);
 	file << "Lista de Adjacência\n";
 	for (auto v : this->vertices)
 	{
@@ -158,7 +158,7 @@ void Graph::printComponents()
 }
 void Graph::saveComponentsToFile(string fileName)
 {
-	ofstream file(fileName, fstream::app);
+	ofstream file(fileName);
 	int counter = 1;
 	int tamanhoMaiorComponente = 0;
 	int tamanhoMenorComponente = this->getNumberOfVertices();
@@ -226,7 +226,7 @@ void Graph::printBFS()
 }
 void Graph::saveBFSToFile(string fileName)
 {
-	ofstream file(fileName, fstream::app);
+	ofstream file(fileName);
 	file << "V|  ";
 	for (auto v : this->vertices)
 	{
@@ -305,9 +305,9 @@ void Graph::dfsr(Vertex *vPai, int *verticesVisitados, No *noPai)
 		}
 	}
 }
-void Graph::geraArquivoArvore()
+void Graph::geraArquivoArvore(string fileName)
 {
-	ofstream file("Arvore.txt", fstream::app);
+	ofstream file(fileName);
 
 	for (int i = 0; i <= this->nivelMax; i++)
 	{

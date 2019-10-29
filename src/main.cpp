@@ -13,17 +13,14 @@ int main()
 	int list_r = 0;
 	int comp_r = 0;
 	int info_r = 0;
-	// system pause
 	
 	// controla quem pode aparecer
 	char proc = 'i';
 	
-	cout << "Digite o nome do arquivo que desja abrir:\nEx.: as_graph :\n";
+	cout << "Digite o nome do arquivo que desja abrir:\nEx.: as_graph.txt :\n";
 	cin >> archive;
-	archive = archive + ".txt";
 	Graph graph(archive);
 	cout << "Arquivo de nome '" << archive << "' carregado com sucesso\n\n";
-	system("PAUSE");
 	cout << "============================ BEM VINDO ============================\n\n";
 
 	while (proc == 'i')
@@ -33,16 +30,16 @@ int main()
 		if (matrix_r == 0)
 			cout << "[2]GERAR MATRIZ DE ADJACÊNCIA\n";
 		else
-			cout << "[-]MATRIZ DE ADJACENCIA JA GERADA\n";
+			cout << "[-]MATRIZ DE ADJACENCIA JA GERADA EM ARQUIVO EXTERNO\n";
 		
 		if (list_r == 0)
 			cout << "[3]GERAR LISTA DE ADJACÊNCIA\n";
 		else
-			cout << "[-]LISTA DE ADJACENCIA JA GERADA\n";
+			cout << "[-]LISTA DE ADJACENCIA JÁ GERADA EM ARQUIVO EXTERNO\n";
 		if (comp_r == 0)
 			cout << "[4]GERAR COMPONENTES CONEXOS\n";
 		else
-			cout << "[-]COMPONENTES CONEXOS JA GERADOS\n";
+			cout << "[-]COMPONENTES CONEXOS JÁ GERADO EM ARQUIVO EXTERNO\n";
 		//
 		cout << "[5]REALIZAR BUSCA EM LARGURA\n";
 		cout << "[6]REALIZAR BUSCA EM PROFUNDIDADE\n";
@@ -60,8 +57,8 @@ int main()
 				cout <<"\nDESEJA SALVAR AS INFORMAÇÕES DO GRAFO EM UM ARQUIVO EXTERNO?\n[1]SIM\n[2]NAO\n";
 				cin >> gi;
 					if (gi ==1){
-						graph.saveGraphInfoFile("out_info.txt");
-						cout << "ARQUIVO DE SAIDA GERADO COM NOME 'out_info.txt'";
+						graph.saveGraphInfoFile("out/info.txt");
+						cout << "ARQUIVO DE SAIDA GERADO COM NOME 'out/info.txt'";
 						info_r = 1;
 					}
 			}
@@ -70,32 +67,36 @@ int main()
 		case 2:
 		{
 			system("clear");
-			graph.generateAdjacencyMatrix();
-			int gm = 0;
 			cout << "====================================================================\n\n";
-			cout << "DESEJA SALVAR A MATRIX DE ADJACÊNCIA GERADA EM UM ARQUIVO EXTERNO ?\n[1]SIM\n[2]NAO\n";
+			cout << "DESEJA PRINTAR OU SALVAR EM UM ARQUIVO EXTERNO?\n[1]PRINTAR\n[2]SALVAR EM ARQUIVO\n";
+			int gm = 0;
 			cin >> gm;
-			if (gm == 1)
+			if (gm == 2)
 			{
 				matrix_r = 1;
-				graph.saveAdjacencyMatrixToFile("out_matrix.txt");
-				cout << "\nARQUIVO DE SAIDA GERADO, NOME: 'out_matrix.txt'\n";
+				graph.saveAdjacencyMatrixToFile("out/matrix.txt");
+				cout << "\nARQUIVO DE SAIDA GERADO, NOME: 'out/matrix.txt'\n";
+			} else if (gm == 1 ){
+				graph.generateAdjacencyMatrix();
 			}
 			break;
 		}
 		case 3:
 		{
 			system("clear");
-			graph.generateAdjacencyList();
 			int gl = 0;
 			cout << "====================================================================\n\n";
-			cout << "DESEJA SALVAR A LISTA DE ADJACÊNCIA GERADA EM UM ARQUIVO EXTERNO ?\n[1]SIM\n[2]NAO\n";
+			cout << "DESEJA PRINTAR OU SALVAR EM UM ARQUIVO EXTERNO?\n[1]PRINTAR\n[2]SALVAR EM ARQUIVO\n";
 			cin >> gl;
-			if (gl == 1)
+			if (gl == 2)
 			{
 				list_r = 1;
-				graph.saveAdjacencyListToFile("out_list.txt");
-				cout << "\nARQUIVO DE SAIDA GERADO, NOME: 'out_list.txt'\n";
+				system("clear");
+				graph.saveAdjacencyListToFile("out/list.txt");
+				cout << "\nARQUIVO DE SAIDA GERADO, NOME: 'out/list.txt'\n";
+			} else if (gl == 1){
+				system("clear");
+				graph.generateAdjacencyList();
 			}
 			break;
 		}
@@ -103,16 +104,19 @@ int main()
 		{
 			system("clear");
 			graph.generateComponents();
-			graph.printComponents();
+			
 			int gc = 0;
 			cout << "====================================================================\n\n";
-			cout << "DESEJA SALVAR OS COMPONENTES COEXOS GERADOS EM UM ARQUIVO EXTERNO ?\n[1]SIM\n[2]NAO\n";
+			cout << "DESEJA PRINTAR OU SALVAR EM UM ARQUIVO EXTERNO?\n[1]PRINTAR\n[2]SALVAR EM ARQUIVO\n";
 			cin >> gc;
-			if (gc == 1)
+			if (gc == 2)
 			{
 				comp_r = 1;
-				graph.saveComponentsToFile("out_components.txt");
-				cout << "\nARQUIVO DE SAIDA GERADO, NOME: 'out_componentes.txt'\n";
+				graph.saveComponentsToFile("out/components.txt");
+				cout << "\nARQUIVO DE SAIDA GERADO, NOME: 'out/componentes.txt'\n";
+			} else if(gc == 1){
+				system("clear");
+				graph.printComponents();
 			}
 			break;
 		}
@@ -128,8 +132,9 @@ int main()
 			cout <<"DESEJA SALVAR OS DADOS DA BUSCA EM LARGURA (BREADTH FIRST SEARCH) EM UM ARQUIVO EXTERNO?\n[1]SIM\n[2]NAO\n";
 			cin >> salva_bfs;
 			if(salva_bfs == 1){
-				graph.saveBFSToFile("out_bfs.TXT");
-				cout << "\nARQUIVO DE SAIDA GERADO, NOME: 'BFS.txt'\n";
+				string newFileName = "out/BFS_"+to_string(vbl)+".txt";
+				graph.saveBFSToFile(newFileName);
+				cout << "\nARQUIVO DE SAIDA GERADO, NOME: '"+newFileName+"'\n";
 			}
 			break;
 		}
@@ -145,8 +150,9 @@ int main()
 			cout <<"DESEJA SALVAR OS DADOS DA BUSCA EM PROFUNDIDADE (DEPTH-FIRST SEARCH) EM UM ARQUIVO EXTERNO?\n[1]SIM\n[2]NAO\n";
 			cin >> salva_dfs; 
 			if(salva_dfs == 1){
-				graph.geraArquivoArvore();
-				cout << "\nARQUIVO DE SAIDA GERADO, NOME: 'Arvore.txt'\n";
+				string newFileName = "out/DFS_"+to_string(vbp)+".txt";
+				graph.geraArquivoArvore(newFileName);
+				cout << "\nARQUIVO DE SAIDA GERADO, NOME: '"+newFileName+"'\n";
 			}
 			break;
 		}

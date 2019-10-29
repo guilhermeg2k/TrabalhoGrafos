@@ -8,6 +8,7 @@
 #include <iostream>
 #include <algorithm>
 #include <queue>
+#include <unordered_map>
 using namespace std;
 class Edge;
 class Vertex;
@@ -68,7 +69,7 @@ public:
 	void graphDFS(int verticeInicial); 
 	void dfsr(Vertex* vPai,int* pre,No* noPai);
 	void printArvore();
-	void geraArquivoArvore();
+	void geraArquivoArvore(string fileName);
 	unsigned int getNumberOfVertices(){
 		return this->vertices.size();
 	};

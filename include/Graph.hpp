@@ -8,7 +8,6 @@
 #include <iostream>
 #include <algorithm>
 #include <queue>
-#include <unordered_map>
 using namespace std;
 class Edge;
 class Vertex;
@@ -26,7 +25,7 @@ class Vertex
 public:
 	unsigned int number;
 	unsigned int degree;
-	map<int, Vertex *> adjacents;
+	vector<Vertex *> adjacents;
 	void setAdjacentsAndDegree(vector<Edge*> edges);
 	bool visitedbyComponentGenerator = false;
 	bool visitedbyBFF = false;
@@ -47,11 +46,11 @@ public:
 	Graph(){};
 	Graph(string textFile);
 	vector<Edge*> edges;
-	unordered_map<int, Vertex *> vertices;
+	vector<Vertex *> vertices;
 	vector<Graph*> components;
-	vector<vector<int>> adjacencyMatrix;
-	vector<vector<int>> adjacencyList;
-	map<int, BFSTable *> BFS;
+	//vector<vector<int>> adjacencyMatrix;
+	//vector<vector<int>> adjacencyList;
+	vector<BFSTable*> BFS;
 	std::vector<No*> arvoreDeBusca;
 	int nivelMax = 0;
 	void printGraphInfo();

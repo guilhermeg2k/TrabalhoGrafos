@@ -217,23 +217,10 @@ void Graph::saveBFSToFile(string fileName)
 
 void Graph::printBFS()
 {
-	cout << "VERTEX   ";
-	for (auto v : this->vertices)
-	{
-		cout << v << " ";
-	}
-	cout << "\n";
-	cout << "ROOT     ";
 	for (int i = 0; i < this->getNumberOfVertices(); i++)
 	{
-		cout << this->BFS[i].root << " ";
+		cout << "Vértice " << i << " Raiz " << this->BFS[i].root << " Nível " << this->BFS[i].distance << "\n";
 	}
-	cout << "\nDISTANCE ";
-	for (int i = 0; i < this->getNumberOfVertices(); i++)
-	{
-		cout << this->BFS[i].distance << " ";
-	}
-	cout << "\n";
 }
 void Graph::visitVerticesRecursive(Vertex *vertex, Graph *component)
 {
@@ -273,7 +260,7 @@ void Graph::graphDFS(int verticeInicial)
 
 void Graph::dfsr(Vertex *vPai, int *verticesVisitados, No *noPai)
 {
-	verticesVisitados[vPai->number] = 0;
+	verticesVisitados[vPai->number] = 1;
 
 	for (auto v : vPai->adjacents)
 	{
@@ -311,7 +298,7 @@ void Graph::geraArquivoArvore(string fileName)
 
 	cout << "Arquivo de arvore gerado";
 }
-pair<int, int> getNumbersFromLine(string line)
+pair<int, int> Graph::getNumbersFromLine(string line)
 {
 	pair<int, int> numbers;
 	istringstream buff(line);

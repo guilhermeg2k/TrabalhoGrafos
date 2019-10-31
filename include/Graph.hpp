@@ -44,13 +44,6 @@ struct BFSTable;
 public:
 	Graph(){};
 	Graph(string textFile);
-	vector<Edge*> edges;
-	vector<Vertex *> vertices;
-	vector<Graph*> components;
-	vector<BFSTable> BFS;
-	std::vector<No*> arvoreDeBusca;
-	int nivelMax = 0;
-	int diameter = 0;
 	void printGraphInfo();
 	void saveGraphInfoFile(string fileName);
 	void generateAdjacencyMatrix();
@@ -68,18 +61,26 @@ public:
 	void printArvore();
 	void geraArquivoArvore(string fileName);
 	void calculateDiameter();
+private:
+	vector<Edge*> edges;
+	vector<Vertex *> vertices;
+	vector<Graph*> components;
+	vector<BFSTable> BFS;
+	std::vector<No*> arvoreDeBusca;
+	int nivelMax = 0;
+	int diameter = 0;
+	struct BFSTable{
+		int distance = 0;
+		int root = 0;
+	};
+	void visitVerticesRecursive(Vertex* vertex, Graph* component);
 	unsigned int getNumberOfVertices(){
 		return this->vertices.size();
 	};
 	unsigned int getNumberOfEdges(){
 		return this->edges.size();
 	};
-private:
-	struct BFSTable{
-		int distance = 0;
-		int root = 0;
-	};
-	void visitVerticesRecursive(Vertex* vertex, Graph* component);
+	pair<int, int> getNumbersFromLine(string line);
 };
-pair<int, int> getNumbersFromLine(string line);
+
 #endif

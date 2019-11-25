@@ -1,18 +1,23 @@
 #include "Graph.hpp"
+
 Edge::Edge(Vertex *a, Vertex *b)
 {
 	this->vertex_a = a;
 	this->vertex_b = b;
 }
-Graph::Graph(string textFile)
+Graph::Graph(string textFile,bool p_temPeso)
 {
+	this->temPeso=p_temPeso;
+
 	ifstream file(textFile);
+	cout << "lendo arquivo \n";
 	if (file.is_open())
 	{
 		string line;
 		istringstream lineStream;
 		getline(file, line);
 		auto numberOfVertices = stoi(line);
+
 		for (int i = 0; i < numberOfVertices; i++)
 		{
 			Vertex *v = new Vertex();
@@ -21,12 +26,26 @@ Graph::Graph(string textFile)
 		}
 		while (getline(file, line))
 		{
-			auto numbers = getNumbersFromLine(line);
-			Edge *edge = new Edge(this->vertices[numbers.first - 1], this->vertices[numbers.second - 1]);
-			this->vertices[numbers.first - 1]->adjacents.push_back(this->vertices[numbers.second - 1]);
-			this->vertices[numbers.second - 1]->adjacents.push_back(this->vertices[numbers.first - 1]);
-			this->edges.push_back(edge);
+			if(this->temPeso==true){
+				auto numbers = getNumbersFromLineV2(line);
+				Edge *edge = new Edge(this->vertices[get<0>(numbers)- 1], this->vertices[get<1>(numbers)- 1]);
+				edge->peso = get<2>(numbers);
+
+				this->vertices[get<0>(numbers) - 1]->adjacents.push_back(this->vertices[get<1>(numbers) - 1]);
+				this->vertices[get<1>(numbers) - 1]->adjacents.push_back(this->vertices[get<0>(numbers) - 1]);
+				this->edges.push_back(edge);
+			}
+			else{
+				auto numbers = getNumbersFromLine(line);
+				Edge *edge = new Edge(this->vertices[numbers.first - 1], this->vertices[numbers.second - 1]);
+				this->vertices[numbers.first - 1]->adjacents.push_back(this->vertices[numbers.second - 1]);
+				this->vertices[numbers.second - 1]->adjacents.push_back(this->vertices[numbers.first - 1]);
+				this->edges.push_back(edge);
+			}
+			
+			
 		}
+
 		for (auto v : this->vertices)
 		{
 			BFSTable bfstable;
@@ -47,14 +66,15 @@ void Graph::printGraphInfo()
 	cout << "Número de vértices: " << this->getNumberOfVertices() << "\n";
 	cout << "Número de arestas: " << this->getNumberOfEdges() << "\n";
 	for (size_t i = 0; i < this->getNumberOfVertices(); i++)
-		cout << "Vértice: " << i << " Grau: " << this->vertices[i]->adjacents.size() << "\n";
+		cout << "Vértice: " << i+1 << " Grau: " << this->vertices[i]->adjacents.size() << "\n";
 }
 void Graph::generateAdjacencyMatrix()
 {
 	cout << "Matrix de Adjacência\n";
 	for (auto v : this->vertices)
 	{
-		int arr[this->getNumberOfVertices()] = {};
+		int arr[this->getNumberOfVertices()];
+
 		for (auto pa : v->adjacents)
 		{
 			arr[pa->number] = 1;
@@ -72,7 +92,8 @@ void Graph::saveAdjacencyMatrixToFile(string fileName)
 	file << "Matrix de Adjacência\n";
 	for (auto v : this->vertices)
 	{
-		int arr[this->getNumberOfVertices()] = {};
+		int arr[this->getNumberOfVertices()];
+
 		for (auto pa : v->adjacents)
 		{
 			arr[pa->number] = 1;
@@ -206,6 +227,7 @@ void Graph::calculateDiameter()
 	}
 	cout << "O DIÂMETRO DO GRAFO É: " << this->diameter << "\n";
 }
+
 void Graph::saveBFSToFile(string fileName)
 {
 	ofstream file(fileName);
@@ -283,6 +305,7 @@ void Graph::dfsr(Vertex *vPai, int *verticesVisitados, No *noPai)
 		}
 	}
 }
+
 void Graph::geraArquivoArvore(string fileName)
 {
 	ofstream file(fileName);
@@ -298,13 +321,147 @@ void Graph::geraArquivoArvore(string fileName)
 
 	cout << "Arquivo de arvore gerado";
 }
+
+bool Graph::verificaPesos(){
+
+	for(Edge* e : this->edges){
+		if(e->peso < 0)
+			return false;
+	}
+
+	return true;
+}
+
+void Graph::custoMinimoDijkstra(Vertex* s)
+{	
+	if(!this->verificaPesos()){
+		cout << "O Grafo possui pesos negativos!";
+		return;
+	}
+		
+
+   int pa[getNumberOfVertices()]; //Vertice pai temporário
+   float dist[getNumberOfVertices()]; //Custo mínimo	
+   bool tree[getNumberOfVertices()];
+
+
+   // inicialização:
+	for(int i = 0;i<getNumberOfVertices();i++){
+	  pa[i] = -1 ;
+	  tree[i] = false;
+	  dist[i] = INFINITY;
+	}
+	
+	//Vértice inicial custo 0
+	pa[s->number] = s->number;
+	tree[s->number] = true; 
+	dist[s->number] = 0.0;
+
+
+
+	//Percorre as arestas procurando os vertices adjacentes ao s
+	for(Edge* e : this->edges){
+
+		if(e->vertex_a->number == s->number){
+			pa[e->vertex_b->number] = s->number;
+			dist[e->vertex_b->number] = e->peso;	
+		}
+
+		if(e->vertex_b->number == s->number){
+			pa[e->vertex_a->number] = s->number;
+			dist[e->vertex_a->number] = e->peso;	
+		}	
+	}
+	
+   Vertex* y = new Vertex();
+
+   while (true) {
+
+      // cálculo de y:
+      float min = INFINITY;
+      for (Vertex* z : this->vertices) {
+		 //Vértice fechado 
+         if (tree[z->number]) 
+		 	continue;
+
+		 //Vértice aberto	 
+         if (dist[z->number] < min){		
+            min = dist[z->number]; 
+			y = z;
+		}
+      }
+
+
+
+      if (min == INFINITY) 
+	  	break;
+      
+	  tree[y->number] = true;
+
+      // atualização de dist[] e pa[]:
+	  for(Edge* e : this->edges)
+	  {
+		  if(e->vertex_a->number == y->number){
+			  if(tree[e->vertex_b->number])
+			  	continue;
+
+			  if ((dist[y->number] + e->peso) < dist[e->vertex_b->number]){
+				  dist[e->vertex_b->number] = dist[y->number] + e->peso;
+				  pa[e->vertex_b->number] = y->number;
+			  }
+			 
+		  }
+		  
+		  if(e->vertex_b->number == y->number){
+			  if(tree[e->vertex_a->number])
+			  	continue;
+
+			  if ((dist[y->number] + e->peso) < dist[e->vertex_a->number]){
+				  dist[e->vertex_a->number] = dist[y->number] + e->peso;
+				  pa[e->vertex_a->number] = y->number;
+			  }
+
+		  }
+
+	  }
+
+}
+
+   std::cout <<"\n";	
+
+   	for(int i=0;i<getNumberOfVertices();i++){
+	   
+	   std::cout << "Custo para alcancar Vertice: "<< i+1 <<" "<< dist[i] << "\n";
+   }
+
+}
+
 pair<int, int> Graph::getNumbersFromLine(string line)
 {
 	pair<int, int> numbers;
 	istringstream buff(line);
 	istream_iterator<string> buff_it(buff), end;
 	vector<string> strings(buff_it, end);
+
 	numbers.first = stoi(strings[0]);
 	numbers.second = stoi(strings[1]);
 	return numbers;
+}
+
+tuple<int,int,float> Graph:: getNumbersFromLineV2(string line){
+	tuple<int,int,float> numbers;
+	istringstream buff(line);
+	istream_iterator<string> buff_it(buff), end;
+	vector<string> strings(buff_it, end);
+
+	numbers = make_tuple(stoi(strings[0]),stoi(strings[1]),stof(strings[2]));
+
+	return numbers;
+}
+
+void Graph::testeArestas(){
+	for (auto edge : this->edges){
+		cout << "v1: " <<edge->vertex_a->number << " v2: " <<edge->vertex_b->number <<" Peso: " <<edge->peso <<"\n";
+
+	}
 }

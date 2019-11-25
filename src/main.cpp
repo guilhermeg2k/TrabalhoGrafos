@@ -13,16 +13,20 @@ int main()
 	int list_r = 0;
 	int comp_r = 0;
 	int info_r = 0;
-	
 	// controla quem pode aparecer
 	char proc = 'i';
-	
+	bool peso = false;
 	cout << "Digite o nome do arquivo que desja abrir:\nEx.: as_graph.txt :\n";
 	cin >> archive;
-	Graph graph(archive);
+	cout << "O grafo possue peso? \n[S]SIM\n[N]NÃO\n";
+	cin >> proc;
+	if (proc == 's' || proc == 'S'){
+		peso = true;
+	}
+	Graph graph(archive, peso);
 	cout << "Arquivo de nome '" << archive << "' carregado com sucesso\n\n";
 	cout << "============================ BEM VINDO ============================\n\n";
-
+	proc = 'i';
 	while (proc == 'i')
 	{
 		cout << "====================================================================\n\n";
@@ -44,7 +48,13 @@ int main()
 		cout << "[5]REALIZAR BUSCA EM LARGURA\n";
 		cout << "[6]REALIZAR BUSCA EM PROFUNDIDADE\n";
 		cout << "[7]CALCULAR DIÂMETRO DO GRAFO\n";
-		cout << "[8]SAIR DO PROGRAMA\n";
+		if (peso == true){
+			cout << "[8]CALCULAR CAMINHO MÍNIMO\n";
+			cout << "[9]SAIR DO PROGRAMA\n";	
+		} else {
+			cout << "[8]SAIR DO PROGRAMA\n";
+		}
+		
 		cin >> op;
 		
 		switch (op)
@@ -128,7 +138,7 @@ int main()
 			cout << "====================================================================\n\n";
 			cout << "DIGITE O NUMERO DO VERTICE QUE DESEJA REALIZAR A BUSCA: \n";
 			cin >> vbl;
-			graph.breadthFirstSearch(vbl);
+			graph.breadthFirstSearch(vbl-1);
 			cout << "====================================================================\n\n";
 			cout <<"DESEJA SALVAR OS DADOS DA BUSCA EM LARGURA (BREADTH FIRST SEARCH) EM UM ARQUIVO EXTERNO?\n[1]SIM\n[2]NAO\n";
 			cin >> salva_bfs;
@@ -147,7 +157,7 @@ int main()
 			cout << "====================================================================\n\n";
 			cout << "DIGITE O NUMERO DO VERTICE QUE DESEJA REALIZAR A BUSCA: \n";
 			cin >> vbp;
-			graph.graphDFS(vbp);
+			graph.graphDFS(vbp-1);
 			cout <<"DESEJA SALVAR OS DADOS DA BUSCA EM PROFUNDIDADE (DEPTH-FIRST SEARCH) EM UM ARQUIVO EXTERNO?\n[1]SIM\n[2]NAO\n";
 			cin >> salva_dfs; 
 			if(salva_dfs == 1){
@@ -164,7 +174,23 @@ int main()
 			break;
 		}
 		case 8: {
-			proc = 's';
+			if (peso == true){
+				uint vertexNumber;
+				Vertex vertex;
+				cout << "Qual vertice deseja calcular o caminho mínimo?\n";
+				cin >> vertexNumber;
+				vertex.number = vertexNumber-1;
+				graph.custoMinimoDijkstra(&vertex);
+				cout << "\n";
+			}	
+			else {
+				proc = 's';
+			}
+			break;
+		}
+		case 9: {
+			if (peso == true)
+				proc = 's';
 			break;
 		}
 		default:

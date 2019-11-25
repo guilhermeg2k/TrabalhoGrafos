@@ -1,5 +1,6 @@
 #ifndef GRAPHS_HPP
 #define GRAPHS_HPP
+#define INFINITY 100000.0
 #include <vector>
 #include <map>
 #include <fstream>
@@ -36,6 +37,7 @@ public:
 	Edge(Vertex *a, Vertex *b);
 	Vertex *vertex_a;
 	Vertex *vertex_b;
+	float peso;
 };
 
 class Graph
@@ -43,7 +45,7 @@ class Graph
 struct BFSTable;
 public:
 	Graph(){};
-	Graph(string textFile);
+	Graph(string textFile,bool p_temPeso);
 	void printGraphInfo();
 	void saveGraphInfoFile(string fileName);
 	void generateAdjacencyMatrix();
@@ -61,14 +63,20 @@ public:
 	void printArvore();
 	void geraArquivoArvore(string fileName);
 	void calculateDiameter();
+	void testeArestas();
+	tuple<int,int,float> getNumbersFromLineV2(string line);
+	bool verificaPesos();
+	void custoMinimoDijkstra(Vertex* s);
 private:
 	vector<Edge*> edges;
 	vector<Vertex *> vertices;
 	vector<Graph*> components;
 	vector<BFSTable> BFS;
-	std::vector<No*> arvoreDeBusca;
+	std::vector<No*> arvoreDeBusca;	
 	int nivelMax = 0;
 	int diameter = 0;
+	bool temPeso;
+
 	struct BFSTable{
 		int distance = 0;
 		int root = 0;
